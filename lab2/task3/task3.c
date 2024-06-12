@@ -2,20 +2,33 @@
 #include <stdlib.h>
 #include <time.h>
 
-int main(){
-    int size;
-    printf("Enter the array size\n");
-    scanf("%d", &size);
-
-    float array[size];
-    printf("%d\n", RAND_MAX);
-    srand(time(NULL));
-    for (int i = 0; i < size; i++){
-        array[i] = (float) rand() / RAND_MAX * (1 - 0) + 0; //Если разделить случайное число, преобразованное к вещественному типу,
-         //которое выдала функция rand(), на значение константы RAND_MAX, то получится вещественное случайное число от 0 до 1.
-         // Теперь, если это число умножить на длину диапазона, то получится число, лежащее в диапазоне от 0 до значения длины диапазона.
-        // Далее если прибавить к нему смещение к минимальной границе, то число благополучно впишется в требуемый диапазон. Таким образом
-        // формула для получения случайного вещественного числа выглядит так
-        printf("%f\t", array[i]);
+void fillArrayWithRandomFloats(float arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        arr[i] = (float)rand() / (float)(RAND_MAX);  // Генерируем случайное число с плавающей точкой от 0 до 1
     }
+}
+
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Использование: %s <размер массива>\n", argv[0]);
+        return 1;
+    }
+
+    int arraySize = atoi(argv[1]);
+    if (arraySize <= 0) {
+        printf("Размер массива должен быть положительным числом.\n");
+        return 1;
+    }
+
+    float random_floats[arraySize];
+    srand(time(NULL));
+
+    fillArrayWithRandomFloats(random_floats, arraySize);
+
+    printf("Сгенерированный массив случайных чисел с плавающей точкой:\n");
+    for (int i = 0; i < arraySize; i++) {
+        printf("%f\n", random_floats[i]);
+    }
+
+    return 0;
 }
