@@ -1,20 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-/*
-Написать программу, которая генерирует массив из псевдослучайных целых чисел и выводит его в консоль.*/
+
+#define ARRAY_SIZE 10
+
 int main() {
+    int random_numbers[ARRAY_SIZE];
     srand(time(NULL));
 
-    int size;
-    printf("Enter the array size\n");
-    scanf("%d", &size);
-
-    int array[size];
-    for (int i = 0; i < size; i++) {
-        array[i] = rand()%100;
-        printf("%d\t", array[i]);
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        random_numbers[i] = rand() % 100;  // Генерируем случайное число от 0 до 99
     }
-    
+
+    printf("Сгенерированный массив случайных чисел:\n");
+    for (int i = 0; i < ARRAY_SIZE; i++) {
+        printf("%d ", random_numbers[i]);
+    }
+    printf("\n");
+
     return 0;
 }
