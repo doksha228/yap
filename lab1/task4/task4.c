@@ -25,9 +25,6 @@ int main() {
 
     return 0;
 }
-printf("x=%f\n", x);
-
-return 0;
 
 
 
