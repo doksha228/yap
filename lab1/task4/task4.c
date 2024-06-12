@@ -1,29 +1,30 @@
 #include <stdio.h>
 
-int main()
-{
+int main() {
+    float a, b, c, x;
 
-printf("Hi! Today we will solve a linear equation of the form ax+b=c\n");
-printf("To do this, let's set the values of the equation\n");
+    printf("Введите коэффициент a: ");
+    scanf("%f", &a);
 
-int a,b,c;
-float x;
+    printf("Введите коэффициент b: ");
+    scanf("%f", &b);
 
-printf("Set the value for coefficiens\n");
+    printf("Введите значение c: ");
+    scanf("%f", &c);
 
-printf("Coefficient a=\n");
-scanf("%d", &a);
+    if (a == 0) {
+        if (b == c) {
+            printf("Решений бесконечно много (уравнение тождественно верно)\n");
+        } else {
+            printf("Нет решений (уравнение неверно)\n");
+        }
+    } else {
+        x = (c - b) / a;
+        printf("x = %.2f\n", x);
+    }
 
-printf("Coefficient b=\n");
-scanf("%d", &b);
-
-printf("Coefficient c=\n");
-scanf("%d", &c);
-
-printf("Now you have equation %d x + %d = %d\n", a, b, c);
-
-x=(c-b)/a;
-
+    return 0;
+}
 printf("x=%f\n", x);
 
 return 0;
