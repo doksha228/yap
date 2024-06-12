@@ -1,123 +1,77 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <string.h>
+
+#define MAX_SIZE 100
 
 struct Stack {
-    int maxSize;
+    int items[MAX_SIZE];
     int top;
-    double *items;
 };
 
-struct Stack *newStack(int capacity) {
-    struct Stack *ptr = (struct Stack*) malloc(sizeof(struct Stack));
-
-    ptr->maxSize = capacity;
-    ptr->top = -1;
-    ptr->items = (double*) malloc(sizeof(int) *capacity);
-    
-    return ptr;
+void initializeStack(struct Stack *stack) {
+    stack->top = -1;
 }
 
-int isEmpty(struct Stack *ptr) {
-    return ptr->top == -1;
+int isEmpty(struct Stack *stack) {
+    return stack->top == -1;
 }
 
-int isFull(struct Stack *ptr) {
-    return ptr->top == ptr->maxSize - 1;
+void push(struct Stack *stack, int value) {
+    stack->items[++(stack->top)] = value;
 }
 
-int push(struct Stack *ptr, double x) {
-    if (isFull(ptr)) {
-        printf("Overflow\n");
-        return 1;
-    }
-
-    ptr->items[++ptr->top] = x;
+int pop(struct Stack *stack) {
+    return stack->items[(stack->top)--];
 }
 
-int pop(struct Stack *ptr) {
-    if(isEmpty(ptr)) {
-        printf("Underflow\n");
-        return 1;
-    }
+int evaluatePostfix(char *expression) {
+    struct Stack stack;
+    initializeStack(&stack);
 
-    return ptr->items[ptr->top--];
-}
-
-int peek(struct Stack *ptr) {
-     if(!isEmpty(ptr)) {
-        return ptr->items[ptr->top];
-    } else {
-        return 1;
-    }
-}
-
-double calculate(char *str, int count) {
-    double result = 0;
-    struct Stack *nums = newStack(count);
-
-    for (int i = 0; i < strlen(str); i++) {
-    
-        if(isdigit(str[i])) {
-            
-            int indexStart = i;
-            while (str[i] != ' ' || str[i] == '+' || str[i] == '-' || str[i] == '*' || str[i] == '/') {
-                i++;
-                if (i == count) break;
+    for (int i = 0; expression[i] != '\0'; i++) {
+        if (isdigit(expression[i])) {
+            push(&stack, expression[i] - '0');
+        } else {
+            int operand2 = pop(&stack);
+            int operand1 = pop(&stack);
+            switch (expression[i]) {
+                case '+':
+                    push(&stack, operand1 + operand2);
+                    break;
+                case '-':
+                    push(&stack, operand1 - operand2);
+                    break;
+                case '*':
+                    push(&stack, operand1 * operand2);
+                    break;
+                case '/':
+                    push(&stack, operand1 / operand2);
+                    break;
             }
-            int indexEnd = i;
-
-            char num[indexEnd-indexStart];
-            int indexNum = 0;
-            for (int j = indexStart; j < indexEnd; j++) {
-                num[indexNum] = str[j];
-                indexNum++;
-            }
-            push(nums, atof(num));
-            i--;
-        
-        } else if (str[i] == '+' || str[i] == '-' || str[i] == '*' || str[i] == '/') {
-            double a = pop(nums);
-            double b = pop(nums);
-
-            switch (str[i]) {
-                case '+': result = b + a; break;
-                case '-': result = b - a; break;
-                case '*': result = b * a; break;
-                case '/': result = b / a; break;
-            }
-            push(nums, result);
         }
-
     }
-    return result;
+
+    return pop(&stack);
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-		printf("Error, try again\n");
-		return 1;
-	}
-
+int main() {
     FILE *inputFile;
+    inputFile = fopen("input.txt", "r");
 
-    inputFile = fopen(argv[1], "r");
     if (inputFile == NULL) {
-        printf("Can`t open file\n");
+        printf("Не удалось открыть файл\n");
         return 1;
     }
 
-    char str[100];
-    fgets(str, sizeof(str), inputFile);
-
-    int count = 0;
-    for (int i = 0; str[i] != '\n' && str[i] != '\0'; i++) {
-        count++;
+    char expression[MAX_SIZE];
+    while (fscanf(inputFile, "%s", expression) != EOF) {
+        printf("Выражение: %s\n", expression);
+        int result = evaluatePostfix(expression);
+        printf("Результат: %d\n\n");
     }
 
     fclose(inputFile);
 
-    printf("Answer = %f\n", calculate(str, count));
     return 0;
 }
