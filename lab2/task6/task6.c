@@ -1,80 +1,67 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define MAX_SIZE 10
+
 struct Stack {
-    int maxSize;
+    int items[MAX_SIZE];
     int top;
-    int *items;
 };
 
-struct Stack *newStack(int capacity) {
-    struct Stack *ptr = (struct Stack*) malloc(sizeof(struct Stack));
-
-    ptr->maxSize = capacity;
-    ptr->top = -1;
-    ptr->items = (int*) malloc(sizeof(int) *capacity);
-    
-    return ptr;
+void initializeStack(struct Stack *stack) {
+    stack->top = -1;
 }
 
-int isEmpty(struct Stack *ptr) {
-    return ptr->top == -1;
+int isFull(struct Stack *stack) {
+    return stack->top == MAX_SIZE - 1;
 }
 
-int isFull(struct Stack *ptr) {
-    return ptr->top == ptr->maxSize - 1;
+int isEmpty(struct Stack *stack) {
+    return stack->top == -1;
 }
 
-int push(struct Stack *ptr, int x) {
-    if (isFull(ptr)) {
-        printf("Overflow\n");
-        return 1;
-    }
-
-    ptr->items[++ptr->top] = x;
-}
-
-int pop(struct Stack *ptr) {
-    if(isEmpty(ptr)) {
-        printf("Underflow\n");
-        return 1;
-    }
-
-    return ptr->items[ptr->top--];
-}
-
-int peek(struct Stack *ptr) {
-     if(!isEmpty(ptr)) {
-        return ptr->items[ptr->top];
+void push(struct Stack *stack, int value) {
+    if (isFull(stack)) {
+        printf("Стек переполнен. Невозможно добавить элемент %d\n", value);
     } else {
-        return 1;
+        stack->items[++(stack->top)] = value;
+        printf("Добавлено значение %d в стек\n", value);
     }
 }
 
-int main () {
-    struct Stack *stack = newStack(10);
-    push(stack, 1);
-    push(stack, 2);
-    push(stack, 3);
-
-    printf("%d\n", peek(stack));
-    pop(stack);
-
-    
-    printf("%d\n", peek(stack));
-    pop(stack);
-    
-    printf("%d\n", peek(stack));
-    pop(stack);
-
-    push(stack, 1);
-
+int pop(struct Stack *stack) {
     if (isEmpty(stack)) {
-        printf("The stack is empty");
+        printf("Стек пуст. Невозможно извлечь значение\n");
+        return -1;
+    } else {
+        return stack->items[(stack->top)--];
     }
-    else {
-        printf("The stack is not empty");
+}
+
+void peek(struct Stack *stack) {
+    if (isEmpty(stack)) {
+        printf("Стек пуст. Нет верхнего значения для просмотра\n");
+    } else {
+        printf("Верхнее значение стека: %d\n", stack->items[stack->top]);
     }
+}
+
+int main() {
+    struct Stack stack;
+    initializeStack(&stack);
+
+    // Примеры операций над стеком
+    push(&stack, 5);
+    push(&stack, 10);
+    push(&stack, 15);
+
+    printf("Извлечено значение из стека: %d\n", pop(&stack));
+    printf("Извлечено значение из стека: %d\n", pop(&stack);
+
+    push(&stack, 20);
+    push(&stack, 25);
+
+    peek(&stack);
 
     return 0;
 }
