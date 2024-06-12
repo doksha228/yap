@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
-#define MAX_SIZE 10
+#define MAX_SIZE 100
 
 struct Stack {
     int items[MAX_SIZE];
@@ -12,56 +13,65 @@ void initializeStack(struct Stack *stack) {
     stack->top = -1;
 }
 
-int isFull(struct Stack *stack) {
-    return stack->top == MAX_SIZE - 1;
-}
-
 int isEmpty(struct Stack *stack) {
     return stack->top == -1;
 }
 
 void push(struct Stack *stack, int value) {
-    if (isFull(stack)) {
-        printf("Стек переполнен. Невозможно добавить элемент %d\n", value);
-    } else {
-        stack->items[++(stack->top)] = value;
-        printf("Добавлено значение %d в стек\n", value);
-    }
+    stack->items[++(stack->top)] = value;
 }
 
 int pop(struct Stack *stack) {
-    if (isEmpty(stack)) {
-        printf("Стек пуст. Невозможно извлечь значение\n");
-        return -1;
-    } else {
-        return stack->items[(stack->top)--];
-    }
+    return stack->items[(stack->top)--];
 }
 
-void peek(struct Stack *stack) {
-    if (isEmpty(stack)) {
-        printf("Стек пуст. Нет верхнего значения для просмотра\n");
-    } else {
-        printf("Верхнее значение стека: %d\n", stack->items[stack->top]);
-    }
-}
-
-int main() {
+int evaluatePostfix(char *expression) {
     struct Stack stack;
     initializeStack(&stack);
 
-    // Примеры операций над стеком
-    push(&stack, 5);
-    push(&stack, 10);
-    push(&stack, 15);
+    for (int i = 0; expression[i] != '\0'; i++) {
+        if (isdigit(expression[i])) {
+            push(&stack, expression[i] - '0');
+        } else {
+            int operand2 = pop(&stack);
+            int operand1 = pop(&stack);
+            switch (expression[i]) {
+                case '+':
+                    push(&stack, operand1 + operand2);
+                    break;
+                case '-':
+                    push(&stack, operand1 - operand2);
+                    break;
+                case '*':
+                    push(&stack, operand1 * operand2);
+                    break;
+                case '/':
+                    push(&stack, operand1 / operand2);
+                    break;
+            }
+        }
+    }
 
-    printf("Извлечено значение из стека: %d\n", pop(&stack));
-    printf("Извлечено значение из стека: %d\n", pop(&stack);
+    return pop(&stack);
+}
 
-    push(&stack, 20);
-    push(&stack, 25);
+int main() {
+    FILE *inputFile;
+    inputFile = fopen("input.txt", "r");
 
-    peek(&stack);
+    if (inputFile == NULL) {
+        printf("Не удалось открыть файл\n");
+        return 1;
+    }
+
+    char expression[MAX_SIZE];
+    while (fscanf(inputFile, "%s", expression) != EOF) {
+        printf("Выражение: %s\n", expression);
+        int result = evaluatePostfix(expression);
+        printf("Результат: %d\n\n");
+    }
+
+    fclose(inputFile);
 
     return 0;
 }
