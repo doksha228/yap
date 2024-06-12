@@ -1,61 +1,62 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+// Структура для хранения данных о товаре
 struct Product {
-    char name[100];
+    char name[50];
     float price;
 };
 
-int compareProducts(const void *a, const void *b) {
+// Функция для сравнения цен товаров при сортировке
+int comparePrices(const void *a, const void *b) {
     const struct Product *productA = (const struct Product *)a;
     const struct Product *productB = (const struct Product *)b;
-    return (productA->price > productB->price) - (productA->price < productB->price);
+    if (productA->price < productB->price) {
+        return -1;
+    } else if (productA->price > productB->price) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
-int main() {
-    FILE *inputFile = fopen("input.txt", "r");
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        printf("Использование: %s <входной_файл> <выходной_файл>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *inputFile = fopen(argv[1], "r");
     if (inputFile == NULL) {
-        printf("Error opening the input file.\n");
+        printf("Ошибка открытия входного файла.\n");
         return 1;
     }
 
     int numProducts;
-    fscanf(inputFile, "%d", &numProducts);
-
-    struct Product *products = (struct Product *)
-    malloc(numProducts * sizeof(struct Product));
-    if (products == NULL) {
-        printf("Memory allocation error.\n");
-        fclose(inputFile);
-        return 1;
-    }
+    fscanf(inputFile, "%d", &numProducts); // Читаем количество товаров из файла
+    struct Product *products = (struct Product *)malloc(numProducts * sizeof(struct Product));
 
     for (int i = 0; i < numProducts; i++) {
-        fscanf(inputFile, "%s %f", products[i].name, &products[i].price);
+        fscanf(inputFile, "%s %f", products[i].name, &products[i].price); // Читаем название и цену каждого товара из файла
     }
 
     fclose(inputFile);
 
-    qsort(products, numProducts, sizeof(struct Product), compareProducts);
+    qsort(products, numProducts, sizeof(struct Product), comparePrices); // Сортируем товары по цене
 
-    FILE *outputFile = fopen("output.txt", "w");
+    FILE *outputFile = fopen(argv[2], "w");
     if (outputFile == NULL) {
-        printf("Error when opening the output file.\n");
-        free(products);
+        printf("Ошибка открытия выходного файла.\n");
         return 1;
     }
 
-    fprintf(outputFile, " Sorted products by price:\n");
     for (int i = 0; i < numProducts; i++) {
-        fprintf(outputFile, "%s %.2f\n", products[i].name, products[i].price);
+        fprintf(outputFile, "%s %.2f\n", products[i].name, products[i].price); // Записываем отсортированные данные в выходной файл
     }
 
     fclose(outputFile);
-
     free(products);
-
-    printf("The data has been successfully sorted and written to a file 'output.txt '.\n");
 
     return 0;
 }
